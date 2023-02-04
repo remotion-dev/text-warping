@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import opentype from 'opentype.js';
-import {AbsoluteFill, staticFile} from 'remotion';
-// @ts-expect-error no types
-import Warp = require('warpjs');
+import {AbsoluteFill, staticFile, useCurrentFrame} from 'remotion';
+
+import {interpolate, transform} from '@jonny/warpts';
 
 type FontInfo = {
 	path: string;
@@ -32,23 +32,22 @@ const getPath = () => {
 export const MyComposition = () => {
 	const [path, setPath] = useState<FontInfo | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
+	const frame = useCurrentFrame();
 
 	useEffect(() => {
 		getPath().then((p) => {
-			setPath(p);
+			const interpolated = interpolate(p.path, 4);
+			const warped = transform(
+				interpolated,
+				([x, y]: number[]) =>
+					[x + 2 * Math.sin(frame / 20 + y / 4), y] as [number, number]
+			);
+			setPath({
+				box: p.box,
+				path: warped,
+			});
 		});
-	}, []);
-
-	useEffect(() => {
-		if (!path) {
-			return;
-		}
-		const warp = new Warp(ref.current);
-
-		warp.interpolate(4);
-
-		warp.transform(([x, y]: [number, number]) => [x + 2 * Math.sin(y / 4), y]);
-	}, [path]);
+	}, [frame]);
 
 	if (!path) {
 		return null;
@@ -74,7 +73,7 @@ export const MyComposition = () => {
 					}}
 					viewBox={`${x1} ${y1} ${x2 - x1} ${y2 - y1}`}
 				>
-					<path d={path.path} fill="black" />
+					<path d={path.path} stroke="black" fill="transparent" />
 				</svg>
 			) : null}
 		</AbsoluteFill>
