@@ -19,13 +19,14 @@
 		"typescript": "^4.9.4"
 	},
 	"dependencies": {
-		"@jonny/warpts": "^1.1.0",
-		"@remotion/cli": "3.3.39",
+		"@jonny/warpts": "^1.8.0",
+		"@remotion/cli": "4.0.0-newpaths.1+2111c6d63",
+		"@remotion/paths": "4.0.0-newpaths.1+2111c6d63",
 		"@types/opentype.js": "^1.3.4",
 		"opentype.js": "^1.3.4",
 		"react": "^18.0.0",
 		"react-dom": "^18.0.0",
-		"remotion": "3.3.39"
+		"remotion": "4.0.0-newpaths.1+2111c6d63"
 	},
 	"packageManager": "npm@8.19.2"
 }

@@ -1,12 +1,18 @@
 import {useEffect, useRef, useState} from 'react';
 import opentype from 'opentype.js';
-import {AbsoluteFill, staticFile, useCurrentFrame} from 'remotion';
+import {
+	AbsoluteFill,
+	spring,
+	staticFile,
+	useCurrentFrame,
+	useVideoConfig,
+} from 'remotion';
 
-import {interpolate, transform} from '@jonny/warpts';
+import {transform} from '@jonny/warpts';
+import {getBoundingBox, resetPath} from '@remotion/paths';
 
 type FontInfo = {
 	path: string;
-	box: opentype.BoundingBox;
 };
 
 const getPath = () => {
@@ -23,29 +29,40 @@ const getPath = () => {
 
 			const path = font.getPath('REMOTION', 0, 150, 72);
 			const p = path.toPathData(2);
-			const box = path.getBoundingBox();
-			resolve({path: p, box});
+			resolve({path: p});
 		});
 	});
 };
 
 export const MyComposition = () => {
-	const [path, setPath] = useState<FontInfo | null>(() => null);
+	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
 	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+	const sprX =
+		spring({
+			fps,
+			frame,
+			config: {
+				damping: 200,
+			},
+		}) *
+			2.5 +
+		1;
+	const sprY =
+		spring({
+			fps,
+			frame: frame - 30,
+			config: {
+				damping: 200,
+			},
+		}) *
+			2.5 +
+		1;
 
 	useEffect(() => {
 		getPath().then((p) => {
-			const interpolated = interpolate(p.path, 4);
-			const warped = transform(
-				interpolated,
-				([x, y]: number[]) =>
-					[x + 2 * Math.sin(frame / 20 + y / 4), y] as [number, number]
-			);
-			setPath({
-				box: p.box,
-				path: warped,
-			});
+			setPath(p.path);
 		});
 	}, [frame]);
 
@@ -53,7 +70,14 @@ export const MyComposition = () => {
 		return null;
 	}
 
-	const {box} = path;
+	const reset = resetPath(path);
+	const warped = transform(
+		reset,
+		({x, y}) => ({x: x * sprY + Math.sin(y / 4 + frame / 20) * 5, y: y * sprX}),
+		4
+	);
+	const box = getBoundingBox(warped);
+
 	const {x1, x2, y1, y2} = box;
 
 	return (
@@ -69,11 +93,11 @@ export const MyComposition = () => {
 					ref={ref}
 					style={{
 						overflow: 'visible',
-						height: 150,
+						height: 50 * sprX,
 					}}
 					viewBox={`${x1} ${y1} ${x2 - x1} ${y2 - y1}`}
 				>
-					<path d={path.path} stroke="black" fill="transparent" />
+					<path d={warped} fill="black" stroke="black" strokeWidth={3} />
 				</svg>
 			) : null}
 		</AbsoluteFill>
