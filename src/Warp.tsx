@@ -1,42 +1,26 @@
-import opentype from 'opentype.js';
 import {useEffect, useRef, useState} from 'react';
-import {AbsoluteFill, staticFile, useCurrentFrame} from 'remotion';
+import {
+	AbsoluteFill,
+	continueRender,
+	delayRender,
+	useCurrentFrame,
+} from 'remotion';
 
 import {getBoundingBox, resetPath, warpPath, WarpPathFn} from '@remotion/paths';
-
-type FontInfo = {
-	path: string;
-};
-
-const getPath = () => {
-	return new Promise<FontInfo>((resolve, reject) => {
-		opentype.load(staticFile('Roboto-Medium.ttf'), (err, font) => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			if (!font) {
-				reject(new Error('No font found'));
-				return;
-			}
-
-			const path = font.getPath('REMOTION', 0, 150, 72);
-			const p = path.toPathData(2);
-			resolve({path: p});
-		});
-	});
-};
+import {getPath} from './helpers/get-path';
 
 export const WarpDemo = () => {
 	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
 	const frame = useCurrentFrame();
+	const [handle] = useState(() => delayRender());
 
 	useEffect(() => {
-		getPath().then((p) => {
-			setPath(p.path);
+		getPath('REMOTION').then((p) => {
+			setPath(p);
+			continueRender(handle);
 		});
-	}, [frame]);
+	}, [frame, handle]);
 
 	if (!path) {
 		return null;

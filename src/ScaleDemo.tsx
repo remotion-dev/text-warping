@@ -1,43 +1,22 @@
-import opentype from 'opentype.js';
+import {delayRender} from 'remotion';
 import {useEffect, useRef, useState} from 'react';
 import {
 	AbsoluteFill,
+	continueRender,
 	spring,
-	staticFile,
 	useCurrentFrame,
 	useVideoConfig,
 } from 'remotion';
 
 import {getBoundingBox, resetPath, scalePath} from '@remotion/paths';
-
-type FontInfo = {
-	path: string;
-};
-
-const getPath = () => {
-	return new Promise<FontInfo>((resolve, reject) => {
-		opentype.load(staticFile('Roboto-Medium.ttf'), (err, font) => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			if (!font) {
-				reject(new Error('No font found'));
-				return;
-			}
-
-			const path = font.getPath('REMOTION', 0, 150, 72);
-			const p = path.toPathData(2);
-			resolve({path: p});
-		});
-	});
-};
+import {getPath} from './helpers/get-path';
 
 export const ScaleDemo = () => {
 	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const [handle] = useState(() => delayRender());
 
 	const sprY =
 		spring({
@@ -51,10 +30,11 @@ export const ScaleDemo = () => {
 		1;
 
 	useEffect(() => {
-		getPath().then((p) => {
-			setPath(p.path);
+		getPath('REMOTION').then((p) => {
+			setPath(p);
+			continueRender(handle);
 		});
-	}, [frame]);
+	}, [frame, handle]);
 
 	if (!path) {
 		return null;
