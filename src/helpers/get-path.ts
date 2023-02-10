@@ -18,3 +18,20 @@ export const getPath = (text: string) => {
 		});
 	});
 };
+
+export const getFont = () => {
+	return new Promise<opentype.Font>((resolve, reject) => {
+		opentype.load(staticFile('Roboto-Medium.ttf'), (err, font) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+			if (!font) {
+				reject(new Error('No font found'));
+				return;
+			}
+
+			resolve(font);
+		});
+	});
+};
