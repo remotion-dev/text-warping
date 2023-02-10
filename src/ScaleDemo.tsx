@@ -1,8 +1,14 @@
 import opentype from 'opentype.js';
 import {useEffect, useRef, useState} from 'react';
-import {AbsoluteFill, staticFile, useCurrentFrame} from 'remotion';
+import {
+	AbsoluteFill,
+	spring,
+	staticFile,
+	useCurrentFrame,
+	useVideoConfig,
+} from 'remotion';
 
-import {getBoundingBox, resetPath, warpPath, WarpPathFn} from '@remotion/paths';
+import {getBoundingBox, resetPath, scalePath} from '@remotion/paths';
 
 type FontInfo = {
 	path: string;
@@ -27,10 +33,22 @@ const getPath = () => {
 	});
 };
 
-export const WarpDemo = () => {
+export const ScaleDemo = () => {
 	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
 	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+
+	const sprY =
+		spring({
+			fps,
+			frame,
+			config: {
+				damping: 200,
+			},
+		}) *
+			4 +
+		1;
 
 	useEffect(() => {
 		getPath().then((p) => {
@@ -44,14 +62,7 @@ export const WarpDemo = () => {
 
 	const reset = resetPath(path);
 
-	const warpPathFn: WarpPathFn = ({x, y}) => ({
-		x: x + Math.sin(y / 4) * 3,
-		y: y * 3,
-	});
-
-	const warped = warpPath(reset, warpPathFn, {
-		interpolationThreshold: 1,
-	});
+	const warped = scalePath(reset, 1, sprY);
 	const box = getBoundingBox(warped);
 
 	const {x1, x2, y1, y2} = box;
@@ -59,7 +70,7 @@ export const WarpDemo = () => {
 	return (
 		<AbsoluteFill
 			style={{
-				backgroundColor: 'white',
+				backgroundColor: 'black',
 				justifyContent: 'center',
 				alignItems: 'center',
 			}}
@@ -69,11 +80,11 @@ export const WarpDemo = () => {
 					ref={ref}
 					style={{
 						overflow: 'visible',
-						height: 300,
+						height: 100 * sprY,
 					}}
 					viewBox={`${x1} ${y1} ${x2 - x1} ${y2 - y1}`}
 				>
-					<path d={warped} fill="black" stroke="black" strokeWidth={3} />
+					<path d={warped} fill="transparent" stroke="pink" strokeWidth={2} />
 				</svg>
 			) : null}
 		</AbsoluteFill>
