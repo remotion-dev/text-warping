@@ -3,7 +3,6 @@ import {
 	AbsoluteFill,
 	continueRender,
 	delayRender,
-	interpolate,
 	useCurrentFrame,
 } from 'remotion';
 
