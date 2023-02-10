@@ -1,15 +1,9 @@
-# Remotion video
+# Remotion text warping
 
-<p align="center">
-  <a href="https://github.com/remotion-dev/logo">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-dark.gif">
-      <img alt="Animated Remotion Logo" src="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-light.gif">
-    </picture>
-  </a>
-</p>
+![Warp](https://user-images.githubusercontent.com/1629785/218113623-986bab59-b0f1-474f-984e-7ba1adf1e501.jpeg)
+![SoGood](https://user-images.githubusercontent.com/1629785/218114019-5968f1d4-e426-4fae-af30-35fb65a08715.jpeg)
 
-Welcome to your Remotion project!
+Demo of the capabilities of the [`warpPath()`](https://www.remotion.dev/docs/paths/warp-path) API in Remotion
 
 ## Commands
 
