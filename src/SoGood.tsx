@@ -1,10 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {
-	AbsoluteFill,
-	continueRender,
-	delayRender,
-	useCurrentFrame,
-} from 'remotion';
+import {AbsoluteFill, continueRender, delayRender} from 'remotion';
 
 import {
 	getBoundingBox,
@@ -24,7 +19,6 @@ function normalDistribution(x: number): number {
 export const SoGood = () => {
 	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
-	const frame = useCurrentFrame();
 	const [handle] = useState(() => delayRender());
 
 	useEffect(() => {
@@ -32,7 +26,7 @@ export const SoGood = () => {
 			setPath(p);
 			continueRender(handle);
 		});
-	}, [frame, handle]);
+	}, [handle]);
 
 	if (!path) {
 		return null;
