@@ -1,10 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {
-	AbsoluteFill,
-	continueRender,
-	delayRender,
-	useCurrentFrame,
-} from 'remotion';
+import {AbsoluteFill, continueRender, delayRender} from 'remotion';
 
 import {getBoundingBox, resetPath, warpPath, WarpPathFn} from '@remotion/paths';
 import {getPath} from './helpers/get-path';
@@ -12,7 +7,6 @@ import {getPath} from './helpers/get-path';
 export const WarpDemo = () => {
 	const [path, setPath] = useState<string | null>(() => null);
 	const ref = useRef<SVGSVGElement>(null);
-	const frame = useCurrentFrame();
 	const [handle] = useState(() => delayRender());
 
 	useEffect(() => {
@@ -20,7 +14,7 @@ export const WarpDemo = () => {
 			setPath(p);
 			continueRender(handle);
 		});
-	}, [frame, handle]);
+	}, [handle]);
 
 	if (!path) {
 		return null;

@@ -1,3 +1,4 @@
+import {Still} from 'remotion';
 import {Composition} from 'remotion';
 import {WarpDemo} from './Warp';
 import {ScaleDemo} from './ScaleDemo';
@@ -10,14 +11,7 @@ import {Promo} from './Promo';
 export const RemotionRoot: React.FC = () => {
 	return (
 		<>
-			<Composition
-				id="Warp"
-				component={WarpDemo}
-				durationInFrames={200}
-				fps={30}
-				width={1080}
-				height={1080}
-			/>
+			<Still id="Warp" component={WarpDemo} width={1080} height={1080} />
 			<Composition
 				id="Scale"
 				component={ScaleDemo}
@@ -26,14 +20,7 @@ export const RemotionRoot: React.FC = () => {
 				width={1280}
 				height={720}
 			/>
-			<Composition
-				id="SoGood"
-				component={SoGood}
-				durationInFrames={200}
-				fps={30}
-				width={1080}
-				height={1080}
-			/>
+			<Still id="SoGood" component={SoGood} width={1080} height={1080} />
 			<Composition
 				id="Styled"
 				component={Styled}
